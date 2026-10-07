@@ -4,6 +4,16 @@
   Custom-Card für <a href="https://github.com/leukipp/touchkio">TouchKio</a> – Steuerung und Status eines Raspberry-Pi-Kiosks im Stil der NAS Card.
 </p>
 
+## Screenshot
+
+<p align="center">
+  <img src="https://raw.githubusercontent.com/BeGiBue/TouchKio-Card/main/images/Screenshot.png" alt="TouchKio Card Screenshot" width="400">
+</p>
+
+<p align="center">
+  <sub>Darstellung mit Beispieldaten und Beispiel-Theme; Farben und Hintergrund kommen von deinem Home-Assistant-Theme.</sub>
+</p>
+
 <p align="center">
   <strong>Version 1.0.0</strong><br>
   <a href="https://github.com/BeGiBue/TouchKio-Card/actions/workflows/validate.yml"><img src="https://github.com/BeGiBue/TouchKio-Card/actions/workflows/validate.yml/badge.svg" alt="HACS validation"></a>
