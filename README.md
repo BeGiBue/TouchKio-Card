@@ -28,7 +28,7 @@
 - Kiosk-Modus und Theme als Auswahl-Kacheln (nativer Picker)
 - Seitenauswahl: Picker mit allen vorhandenen Home-Assistant-Dashboards und deren Ansichten; die Auswahl wird in die Seiten-URL-Entität geschrieben. Der Stift öffnet die Detailansicht zum manuellen Bearbeiten der URL
 - Prozessor-Temperatur, CPU, RAM und Paket-Updates; Warnfarben (CPU orange ab 75 %, RAM ab 80 %, Temperatur ab 70 °C, rot ab 90 % / 90 % / 80 °C)
-- Netzwerkadresse und Laufzeit (Einheit wird automatisch gewählt: Minuten, Stunden oder Tage)
+- Netzwerkadresse und Laufzeit (Einheit wird automatisch gewählt: Minuten, Stunden, Tage oder Wochen)
 - App-Update-Zeile mit installierter und ggf. neuer Version; bei verfügbarem Update und unterstützter Installation erscheint der Button **Installieren** (mit zweitem Tippen zur Bestätigung), während der Installation der Fortschritt in Prozent
 - Tippen auf die Kachel **Pakete** klappt die Liste der verfügbaren System-Updates (Paketname und neue Version) auf und wieder zu
 - Aktualisieren, Neustart und Herunterfahren; Neustart und Herunterfahren verlangen ein zweites Tippen

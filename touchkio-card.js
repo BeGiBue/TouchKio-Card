@@ -141,13 +141,14 @@ class TouchkioCard extends HTMLElement{
     const b=bar&&!isNaN(v.num)&&v.unit==="%"?`<i class="bar"><u style="width:${Math.max(0,Math.min(100,v.num))}%"></u></i>`:"";
     return`<button class="tile tone-${tone}" ${act==="pkgs"?`data-pkgs="1" aria-expanded="${!!this._pkgOpen}"`:`data-more="${this._e(id)}"`} aria-label="${this._e(label)}: ${this._e(v.value)} ${this._e(v.unit)}"><span class="chip"><ha-icon icon="${icon}"></ha-icon></span><span class="lbl">${label}</span><span class="val${v.text?" txt":""}"><b>${this._e(v.value)}</b>${v.unit?`<em>${this._e(v.unit)}</em>`:""}</span>${b}${act==="pkgs"?`<ha-icon class="chev" icon="mdi:chevron-${this._pkgOpen?"up":"down"}"></ha-icon>`:""}</button>`;
   }
-  // Laufzeit in passender Einheit: "42 Min", "5 Std 12 Min", "2 Tage 3 Std" (TouchKio meldet Minuten)
+  // Laufzeit in passender Einheit: "42 Min", "5 Std 12 Min", "2 Tage 3 Std", "3 Wochen 2 Tage" (TouchKio meldet Minuten)
   _uptime(id){
     const s=this._s(id);if(this._bad(s))return"—";
     const n=Number(String(s.state).replace(",","."));if(!Number.isFinite(n)||n<0)return this._f(id);
     const f={s:1/60,sec:1/60,min:1,h:60,d:1440}[String(s.attributes?.unit_of_measurement||"min").toLowerCase()];
     if(!f)return this._f(id);
     const t=Math.floor(n*f),d=Math.floor(t/1440),h=Math.floor(t%1440/60),m=t%60;
+    if(d>=7){const w=Math.floor(d/7),r=d%7;return`${w} ${w===1?"Woche":"Wochen"}${r?` ${r} ${r===1?"Tag":"Tage"}`:""}`;}
     if(d>0)return`${d} ${d===1?"Tag":"Tage"}${h?` ${h} Std`:""}`;
     if(h>0)return`${h} Std${m?` ${m} Min`:""}`;
     return`${m} Min`;
