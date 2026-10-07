@@ -24,12 +24,11 @@
 - Theme-sensitive Darstellung für Light Mode, Dark Mode und benutzerdefinierte Home-Assistant-Themes (Glas-Look)
 - Freigestelltes TouchKio-Gerätebild direkt in der JavaScript-Komponente eingebettet – groß im Hintergrund; optional eigene Bild-URL oder ausblendbar
 - Display-Helligkeit per Slider; Tippen auf das Symbol schaltet das Display ein oder aus
-- Seiten-Zoom per Slider
 - Bildschirmtastatur als Schalter-Kachel
 - Kiosk-Modus und Theme als Auswahl-Kacheln (nativer Picker)
 - Seitenauswahl: Picker mit allen vorhandenen Home-Assistant-Dashboards und deren Ansichten; die Auswahl wird in die Seiten-URL-Entität geschrieben. Der Stift öffnet die Detailansicht zum manuellen Bearbeiten der URL
 - Prozessor-Temperatur, CPU, RAM und Paket-Updates; Warnfarben (CPU orange ab 75 %, RAM ab 80 %, Temperatur ab 70 °C, rot ab 90 % / 90 % / 80 °C)
-- Netzwerkadresse und Laufzeit
+- Netzwerkadresse und Laufzeit (Einheit wird automatisch gewählt: Minuten, Stunden oder Tage)
 - App-Update-Zeile mit installierter und ggf. neuer Version; bei verfügbarem Update und unterstützter Installation erscheint der Button **Installieren** (mit zweitem Tippen zur Bestätigung), während der Installation der Fortschritt in Prozent
 - Tippen auf die Kachel **Pakete** klappt die Liste der verfügbaren System-Updates (Paketname und neue Version) auf und wieder zu
 - Aktualisieren, Neustart und Herunterfahren; Neustart und Herunterfahren verlangen ein zweites Tippen
@@ -41,7 +40,6 @@
 
 ```text
 light.touchkio_touchkio_display
-number.touchkio_touchkio_page_zoom
 switch.touchkio_touchkio_keyboard
 select.touchkio_touchkio_kiosk
 select.touchkio_touchkio_theme
@@ -89,7 +87,6 @@ type: custom:touchkio-card
 title: TouchKio
 subtitle: Kiosk-Steuerung
 display_entity: light.touchkio_touchkio_display
-zoom_entity: number.touchkio_touchkio_page_zoom
 keyboard_entity: switch.touchkio_touchkio_keyboard
 kiosk_entity: select.touchkio_touchkio_kiosk
 theme_entity: select.touchkio_touchkio_theme

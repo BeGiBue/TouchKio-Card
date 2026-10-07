@@ -22,7 +22,7 @@
 - [ ] Visuellen Editor prüfen: Titel, Untertitel, Bild-Optionen und alle Entity-Picker.
 - [ ] Breitenänderung im Sections-Dashboard prüfen; Höhe darf nicht manuell skalierbar sein.
 - [ ] Mobile Ansicht prüfen (iPhone, iPad, Kiosk).
-- [ ] Display-Slider und Seiten-Zoom mit der echten TouchKio-Instanz prüfen.
+- [ ] Display-Slider mit der echten TouchKio-Instanz prüfen.
 - [ ] Seitenauswahl prüfen: Dashboards und Ansichten werden geladen, Auswahl ändert die Seiten-URL.
 - [ ] Kiosk-Modus und Theme (Auswahl) sowie Bildschirmtastatur (Schalter) prüfen.
 - [ ] Paket-Liste prüfen (Tippen auf „Pakete").

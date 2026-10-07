@@ -12,7 +12,6 @@ const DEF={title:"TouchKio",subtitle:"Kiosk-Steuerung",show_image:true,image_url
   kiosk_entity:"select.touchkio_touchkio_kiosk",
   theme_entity:"select.touchkio_touchkio_theme",
   url_entity:"text.touchkio_touchkio_page_url",
-  zoom_entity:"number.touchkio_touchkio_page_zoom",
   temperature_entity:"sensor.touchkio_touchkio_processor_temperature",
   cpu_entity:"sensor.touchkio_touchkio_processor_usage",
   memory_entity:"sensor.touchkio_touchkio_memory_usage",
@@ -30,12 +29,12 @@ class TouchkioCard extends HTMLElement{
   static getConfigForm(){
     const e=(n,d)=>({name:n,selector:{entity:d?{domain:d}:{}}}),t=n=>({name:n,selector:{text:{}}}),x=(name,title,schema)=>({type:"expandable",name,title,flatten:true,schema});
     const L={title:"Titel",subtitle:"Untertitel",show_image:"Gerätebild als Hintergrund anzeigen",image_url:"Eigenes Gerätebild (URL, optional)",scale:"Größe (Kiosk: 1,2 – 1,5)",confirm_actions:"Neustart/Herunterfahren bestätigen lassen",
-      display_entity:"Display (Helligkeit)",keyboard_entity:"Bildschirmtastatur",kiosk_entity:"Kiosk-Modus",theme_entity:"Theme",url_entity:"Seiten-URL (Text-Entität, Seitenauswahl)",zoom_entity:"Seiten-Zoom",
+      display_entity:"Display (Helligkeit)",keyboard_entity:"Bildschirmtastatur",kiosk_entity:"Kiosk-Modus",theme_entity:"Theme",url_entity:"Seiten-URL (Text-Entität, Seitenauswahl)",
       temperature_entity:"Prozessor-Temperatur",cpu_entity:"Prozessor-Auslastung",memory_entity:"Speichernutzung",packages_entity:"Paket-Updates",network_entity:"Netzwerkadresse",uptime_entity:"Laufzeit",
       update_title:"Titel",update_entity:"Update-Entität",refresh_entity:"Seite aktualisieren",reboot_entity:"Neustart",shutdown_entity:"Herunterfahren"};
     return{schema:[
       x("general","Allgemein",[t("title"),t("subtitle"),{name:"show_image",selector:{boolean:{}}},t("image_url"),{name:"scale",selector:{number:{min:.8,max:1.8,step:.05,mode:"slider"}}},{name:"confirm_actions",selector:{boolean:{}}}]),
-      x("control","Steuerung",[e("display_entity","light"),e("zoom_entity","number"),e("keyboard_entity","switch"),e("kiosk_entity","select"),e("theme_entity","select"),e("url_entity","text")]),
+      x("control","Steuerung",[e("display_entity","light"),e("keyboard_entity","switch"),e("kiosk_entity","select"),e("theme_entity","select"),e("url_entity","text")]),
       x("system","System",[e("temperature_entity","sensor"),e("cpu_entity","sensor"),e("memory_entity","sensor"),e("packages_entity","sensor"),e("network_entity","sensor"),e("uptime_entity","sensor")]),
       x("update","Update",[t("update_title"),e("update_entity","update")]),
       x("actions","Aktionen",[e("refresh_entity","button"),e("reboot_entity","button"),e("shutdown_entity","button")])],
@@ -137,10 +136,21 @@ class TouchkioCard extends HTMLElement{
       groups.map(g=>`<optgroup label="${this._e(g.group)}">${g.items.map(it=>`<option value="${this._e(it.url)}"${cur&&norm(it.url)===norm(cur)?" selected":""}>${this._e(it.label)}</option>`).join("")}</optgroup>`).join("");
     return`<div class="panel row pick"><span class="chip"><ha-icon icon="mdi:web"></ha-icon></span><span class="ut"><b>Seite</b><small>${this._e(sub)}</small></span><button class="edit" data-more="${this._e(id)}" aria-label="URL bearbeiten"><ha-icon icon="mdi:pencil-outline"></ha-icon></button><ha-icon class="chev" icon="mdi:chevron-down"></ha-icon><select data-page="${this._e(id)}" aria-label="Seite wählen">${opts}</select></div>`;
   }
-  _tile(icon,id,label,tone,bar,text,act){
-    const v=text?{value:this._f(id),unit:"",num:NaN,text:true}:this._val(id);
+  _tile(icon,id,label,tone,bar,text,act,override){
+    const v=text?{value:override??this._f(id),unit:"",num:NaN,text:true}:this._val(id);
     const b=bar&&!isNaN(v.num)&&v.unit==="%"?`<i class="bar"><u style="width:${Math.max(0,Math.min(100,v.num))}%"></u></i>`:"";
     return`<button class="tile tone-${tone}" ${act==="pkgs"?`data-pkgs="1" aria-expanded="${!!this._pkgOpen}"`:`data-more="${this._e(id)}"`} aria-label="${this._e(label)}: ${this._e(v.value)} ${this._e(v.unit)}"><span class="chip"><ha-icon icon="${icon}"></ha-icon></span><span class="lbl">${label}</span><span class="val${v.text?" txt":""}"><b>${this._e(v.value)}</b>${v.unit?`<em>${this._e(v.unit)}</em>`:""}</span>${b}${act==="pkgs"?`<ha-icon class="chev" icon="mdi:chevron-${this._pkgOpen?"up":"down"}"></ha-icon>`:""}</button>`;
+  }
+  // Laufzeit in passender Einheit: "42 Min", "5 Std 12 Min", "2 Tage 3 Std" (TouchKio meldet Minuten)
+  _uptime(id){
+    const s=this._s(id);if(this._bad(s))return"—";
+    const n=Number(String(s.state).replace(",","."));if(!Number.isFinite(n)||n<0)return this._f(id);
+    const f={s:1/60,sec:1/60,min:1,h:60,d:1440}[String(s.attributes?.unit_of_measurement||"min").toLowerCase()];
+    if(!f)return this._f(id);
+    const t=Math.floor(n*f),d=Math.floor(t/1440),h=Math.floor(t%1440/60),m=t%60;
+    if(d>0)return`${d} ${d===1?"Tag":"Tage"}${h?` ${h} Std`:""}`;
+    if(h>0)return`${h} Std${m?` ${m} Min`:""}`;
+    return`${m} Min`;
   }
   // Liste der verfügbaren apt-Updates (Attribut "packages": [{name: version}, …])
   _pkgList(){
@@ -256,7 +266,7 @@ class TouchkioCard extends HTMLElement{
     ].filter(Boolean);
     const info=[
       has(c.network_entity)&&this._tile("mdi:ip-network-outline",c.network_entity,"Netzwerk","primary",false,true),
-      has(c.uptime_entity)&&this._tile("mdi:timer-outline",c.uptime_entity,"Laufzeit","primary",false,true)
+      has(c.uptime_entity)&&this._tile("mdi:timer-outline",c.uptime_entity,"Laufzeit","primary",false,true,"",this._uptime(c.uptime_entity))
     ].filter(Boolean);
     const ctl=[
       has(c.keyboard_entity)&&this._toggle("mdi:keyboard-outline",c.keyboard_entity,"Tastatur"),
@@ -279,7 +289,6 @@ class TouchkioCard extends HTMLElement{
       ${this._pkgPanel()}
       ${info.length?`<section class="two">${info.join("")}</section>`:""}
       ${has(c.display_entity)?this._slider("mdi:brightness-6",c.display_entity,"Display","light"):""}
-      ${has(c.zoom_entity)?this._slider("mdi:magnify-plus-outline",c.zoom_entity,"Seiten-Zoom","number"):""}
     </main></ha-card>`;
     const im=this.shadowRoot.querySelector(".bgimg");
     if(im)im.onerror=()=>{if(im.src!==EMBEDDED_IMAGE_URL)im.src=EMBEDDED_IMAGE_URL;else im.style.display="none";};
