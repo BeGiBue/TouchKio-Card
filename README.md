@@ -141,4 +141,8 @@ Dieses Projekt ist ein unabhängiges Community-Projekt und steht in keiner Verbi
 
 ## Lizenz
 
-GNU Affero General Public License v3.0 only (**AGPL-3.0-only**). Details stehen in [`LICENSE`](LICENSE).
+GNU Affero General Public License v3.0 only (**AGPL-3.0-only**).
+
+Nutzung, Änderungen und Weitergabe sind unter den Bedingungen der AGPL erlaubt; abgeleitete Werke müssen unter derselben Lizenz stehen. Bei modifizierten Versionen, die über ein Netzwerk genutzt werden, muss der entsprechende Quellcode den Nutzern zugänglich gemacht werden.
+
+Details stehen in [`LICENSE`](LICENSE).
