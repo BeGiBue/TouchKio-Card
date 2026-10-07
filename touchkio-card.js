@@ -244,14 +244,14 @@ class TouchkioCard extends HTMLElement{
     const pill=has(c.display_entity)?`<span class="pill static tone-${this._tone(c.display_entity)}"><i class="dot"></i><b>${this._e(this._f(c.display_entity))}</b></span>`:"";
     this.shadowRoot.innerHTML=`<style>${TouchkioCard.css}</style><ha-card style="--s:${sc}">${c.show_image!==false?`<img class="bgimg" alt="" src="${this._e(c.image_url?.trim()||EMBEDDED_IMAGE_URL)}">`:""}<main>
       <header class="head"><div class="title"><span class="chip big"><ha-icon icon="mdi:tablet-dashboard"></ha-icon></span><div><h1>${this._e(c.title)}</h1><p>${this._e(c.subtitle)}</p></div></div>${pill}</header>
-      ${has(c.display_entity)?this._slider("mdi:brightness-6",c.display_entity,"Display","light"):""}
-      ${has(c.zoom_entity)?this._slider("mdi:magnify-plus-outline",c.zoom_entity,"Seiten-Zoom","number"):""}
+      ${has(c.update_entity)?`<button class="panel row tone-${upT}" data-more="${this._e(c.update_entity)}"><span class="chip"><ha-icon icon="mdi:update"></ha-icon></span><span class="ut"><b>${this._e(c.update_title)}</b><small>${this._e(ver||this._f(c.update_entity))}</small></span><span class="pill static"><i class="dot"></i><b>${this._e(this._f(c.update_entity))}</b></span></button>`:""}
+      ${acts.length?`<section class="foot n${acts.length}${acts.length%2?" odd":""}">${acts.join("")}</section>`:""}
       ${ctl.length?`<section class="ctl">${ctl.join("")}</section>`:""}
       ${has(c.url_entity)?this._pagePicker():""}
       ${tiles.length?`<section class="tiles">${tiles.join("")}</section>`:""}
       ${info.length?`<section class="two">${info.join("")}</section>`:""}
-      ${has(c.update_entity)?`<button class="panel row tone-${upT}" data-more="${this._e(c.update_entity)}"><span class="chip"><ha-icon icon="mdi:update"></ha-icon></span><span class="ut"><b>${this._e(c.update_title)}</b><small>${this._e(ver||this._f(c.update_entity))}</small></span><span class="pill static"><i class="dot"></i><b>${this._e(this._f(c.update_entity))}</b></span></button>`:""}
-      ${acts.length?`<section class="foot n${acts.length}${acts.length%2?" odd":""}">${acts.join("")}</section>`:""}
+      ${has(c.display_entity)?this._slider("mdi:brightness-6",c.display_entity,"Display","light"):""}
+      ${has(c.zoom_entity)?this._slider("mdi:magnify-plus-outline",c.zoom_entity,"Seiten-Zoom","number"):""}
     </main></ha-card>`;
     const im=this.shadowRoot.querySelector(".bgimg");
     if(im)im.onerror=()=>{if(im.src!==EMBEDDED_IMAGE_URL)im.src=EMBEDDED_IMAGE_URL;else im.style.display="none";};
