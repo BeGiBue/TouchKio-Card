@@ -62,6 +62,12 @@ Alle Entitäten können im grafischen Karteneditor geändert oder geleert werden
 
 ## Installation über HACS
 
+### Automatisch
+
+[![Open your Home Assistant instance and open this repository inside the Home Assistant Community Store.](https://my.home-assistant.io/badges/hacs_repository.svg)](https://my.home-assistant.io/redirect/hacs_repository/?owner=BeGiBue&repository=TouchKio-Card&category=plugin)
+
+### Manuell
+
 1. In HACS **Benutzerdefinierte Repositories** öffnen.
 2. `https://github.com/BeGiBue/TouchKio-Card` hinzufügen.
 3. Als Typ **Dashboard** auswählen.
