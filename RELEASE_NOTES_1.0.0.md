@@ -4,11 +4,11 @@ Erste Version der TouchKio Card für Home Assistant: Steuerung und Status eines 
 
 ## Highlights
 
-- Display-Helligkeit als Slider; Tippen auf das Display-Symbol schaltet das Display ein oder aus
+- Display-Helligkeit und Seiten-Zoom als Slider; Tippen auf das Display-Symbol schaltet das Display ein oder aus
 - Bildschirmtastatur, Kiosk-Modus und Theme direkt steuerbar
 - Seitenauswahl mit allen vorhandenen Home-Assistant-Dashboards und Ansichten; manuelle URL über den Stift
 - Temperatur, CPU, RAM und Paket-Updates mit Warnfarben; Liste der verfügbaren System-Updates per Tippen auf **Pakete**
-- Netzwerkadresse und Laufzeit (Einheit automatisch: Minuten, Stunden, Tage oder Wochen)
+- Netzwerkadresse und Laufzeit
 - App-Update mit Button **Installieren** (zweites Tippen zur Bestätigung) und Fortschrittsanzeige, sofern TouchKio die Installation unterstützt
 - Aktualisieren, Neustart und Ausschalten; Neustart und Ausschalten verlangen ein zweites Tippen
 - Freigestelltes Gerätebild groß im Hintergrund (abschaltbar oder durch eigenes Bild ersetzbar)
