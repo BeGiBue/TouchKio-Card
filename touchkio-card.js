@@ -83,7 +83,7 @@ class TouchkioCard extends HTMLElement{
     if(!this.shadowRoot||!this._config||this._drag)return;
     const c=this._config;
     const ids=Object.keys(c).filter(k=>k.endsWith("_entity")).map(k=>c[k]);
-    const sig=JSON.stringify(c)+ids.map(id=>{const s=this._s(id);return s?`${s.state}|${s.attributes?.unit_of_measurement||""}|${s.attributes?.brightness??""}|${s.attributes?.latest_version||""}|${(s.attributes?.options||[]).join(",")}`:"-";}).join("§")+(this._hass?.language||"");
+    const sig=JSON.stringify(c)+ids.map(id=>{const s=this._s(id);return s?`${s.state}|${s.attributes?.unit_of_measurement||""}|${s.attributes?.brightness??""}|${s.attributes?.latest_version||""}|${s.attributes?.in_progress??""}|${s.attributes?.update_percentage??""}|${s.attributes?.supported_features??""}|${Array.isArray(s.attributes?.packages)?s.attributes.packages.length:""}|${(s.attributes?.options||[]).join(",")}`:"-";}).join("§")+(this._hass?.language||"");
     if(sig===this._sig&&this._built)return;
     this._sig=sig;this._render();
   }
@@ -133,10 +133,19 @@ class TouchkioCard extends HTMLElement{
       groups.map(g=>`<optgroup label="${this._e(g.group)}">${g.items.map(it=>`<option value="${this._e(it.url)}"${cur&&norm(it.url)===norm(cur)?" selected":""}>${this._e(it.label)}</option>`).join("")}</optgroup>`).join("");
     return`<div class="panel row pick"><span class="chip"><ha-icon icon="mdi:web"></ha-icon></span><span class="ut"><b>Seite</b><small>${this._e(sub)}</small></span><button class="edit" data-more="${this._e(id)}" aria-label="URL bearbeiten"><ha-icon icon="mdi:pencil-outline"></ha-icon></button><ha-icon class="chev" icon="mdi:chevron-down"></ha-icon><select data-page="${this._e(id)}" aria-label="Seite wählen">${opts}</select></div>`;
   }
-  _tile(icon,id,label,tone,bar,text){
+  _tile(icon,id,label,tone,bar,text,act){
     const v=text?{value:this._f(id),unit:"",num:NaN,text:true}:this._val(id);
     const b=bar&&!isNaN(v.num)&&v.unit==="%"?`<i class="bar"><u style="width:${Math.max(0,Math.min(100,v.num))}%"></u></i>`:"";
-    return`<button class="tile tone-${tone}" data-more="${this._e(id)}" aria-label="${this._e(label)}: ${this._e(v.value)} ${this._e(v.unit)}"><span class="chip"><ha-icon icon="${icon}"></ha-icon></span><span class="lbl">${label}</span><span class="val${v.text?" txt":""}"><b>${this._e(v.value)}</b>${v.unit?`<em>${this._e(v.unit)}</em>`:""}</span>${b}</button>`;
+    return`<button class="tile tone-${tone}" ${act==="pkgs"?`data-pkgs="1" aria-expanded="${!!this._pkgOpen}"`:`data-more="${this._e(id)}"`} aria-label="${this._e(label)}: ${this._e(v.value)} ${this._e(v.unit)}"><span class="chip"><ha-icon icon="${icon}"></ha-icon></span><span class="lbl">${label}</span><span class="val${v.text?" txt":""}"><b>${this._e(v.value)}</b>${v.unit?`<em>${this._e(v.unit)}</em>`:""}</span>${b}${act==="pkgs"?`<ha-icon class="chev" icon="mdi:chevron-${this._pkgOpen?"up":"down"}"></ha-icon>`:""}</button>`;
+  }
+  // Liste der verfügbaren apt-Updates (Attribut "packages": [{name: version}, …])
+  _pkgList(){
+    const a=this._s(this._config.packages_entity)?.attributes?.packages;
+    return Array.isArray(a)?a.flatMap(o=>o&&typeof o==="object"?Object.entries(o):[[String(o),""]]):[];
+  }
+  _pkgPanel(){
+    const list=this._pkgList();if(!this._pkgOpen||!list.length)return"";
+    return`<section class="panel pkgs"><header><b>Verfügbare Paket-Updates</b><span>${list.length}</span></header><div class="plist">${list.map(([n,v])=>`<div class="prow"><span>${this._e(n)}</span><b>${this._e(v)}</b></div>`).join("")}</div><small>Wird stündlich geprüft. Installation auf dem Gerät: <code>sudo apt update &amp;&amp; sudo apt upgrade</code></small></section>`;
   }
   _toggle(icon,id,label){
     return`<button class="tile tone-${this._tone(id)}" data-toggle="${this._e(id)}" aria-label="${this._e(label)}"><span class="chip"><ha-icon icon="${icon}"></ha-icon></span><span class="lbl">${label}</span><span class="val txt"><b>${this._e(this._f(id))}</b></span></button>`;
@@ -191,6 +200,16 @@ class TouchkioCard extends HTMLElement{
   _bind(){
     const r=this.shadowRoot;
     r.querySelectorAll("[data-more]").forEach(x=>x.onclick=()=>this._more(x.dataset.more));
+    r.querySelectorAll("[data-pkgs]").forEach(x=>x.onclick=()=>{this._pkgOpen=!this._pkgOpen;this._sig="";this._render();});
+    r.querySelectorAll("button[data-install]").forEach(x=>x.onclick=async()=>{
+      const b=x.querySelector("b");
+      if(this._config.confirm_actions!==false&&!x.classList.contains("arm")){
+        x.classList.add("arm");b.textContent="Nochmal tippen";
+        clearTimeout(x._t);x._t=setTimeout(()=>{x.classList.remove("arm");b.textContent="Installieren";},4000);return;
+      }
+      clearTimeout(x._t);b.textContent="Gesendet";
+      if(!await this._call("update","install",{entity_id:x.dataset.install})){x.classList.remove("arm");b.textContent="Installieren";}
+    });
     r.querySelectorAll("[data-press]").forEach(x=>x.onclick=()=>this._press(x));
     r.querySelectorAll("[data-toggle]").forEach(x=>x.onclick=()=>{const id=x.dataset.toggle;this._call(id.split(".")[0],"toggle",{entity_id:id});});
     r.querySelectorAll("select[data-select]").forEach(x=>x.onchange=()=>this._call("select","select_option",{entity_id:x.dataset.select,option:x.value}));
@@ -221,11 +240,15 @@ class TouchkioCard extends HTMLElement{
     const up=this._s(c.update_entity),upT=this._tone(c.update_entity);
     const ver=up?.attributes?.installed_version?(up.attributes.latest_version&&up.attributes.latest_version!==up.attributes.installed_version?`${up.attributes.installed_version} → ${up.attributes.latest_version}`:`Version ${up.attributes.installed_version}`):"";
     const pk=this._n(c.packages_entity);
+    const ua=up?.attributes||{},canInstall=up?.state==="on"&&((Number(ua.supported_features)||0)&1)===1,busy=ua.in_progress===true||(typeof ua.in_progress==="number"&&ua.in_progress>0);
+    const upAct=busy?`<span class="pill static tone-primary"><i class="dot"></i><b>${ua.update_percentage!=null?`${this._e(Math.round(Number(ua.update_percentage)))} %`:"Läuft …"}</b></span>`
+      :canInstall?`<button class="pill inst" data-install="${this._e(c.update_entity)}"><i class="dot"></i><b>Installieren</b></button>`
+      :`<span class="pill static"><i class="dot"></i><b>${this._e(this._f(c.update_entity))}</b></span>`;
     const tiles=[
       has(c.temperature_entity)&&this._tile("mdi:thermometer",c.temperature_entity,"Temp.",this._lvl(this._n(c.temperature_entity),70,80)),
       has(c.cpu_entity)&&this._tile("mdi:cpu-64-bit",c.cpu_entity,"CPU",this._lvl(this._n(c.cpu_entity),75,90),true),
       has(c.memory_entity)&&this._tile("mdi:memory",c.memory_entity,"RAM",this._lvl(this._n(c.memory_entity),80,90),true),
-      has(c.packages_entity)&&this._tile("mdi:package-up",c.packages_entity,"Pakete",isNaN(pk)?"neutral":pk>0?"warning":"success")
+      has(c.packages_entity)&&this._tile("mdi:package-up",c.packages_entity,"Pakete",isNaN(pk)?"neutral":pk>0?"warning":"success",false,false,this._pkgList().length?"pkgs":"")
     ].filter(Boolean);
     const info=[
       has(c.network_entity)&&this._tile("mdi:ip-network-outline",c.network_entity,"Netzwerk","primary",false,true),
@@ -244,11 +267,12 @@ class TouchkioCard extends HTMLElement{
     const pill=has(c.display_entity)?`<span class="pill static tone-${this._tone(c.display_entity)}"><i class="dot"></i><b>${this._e(this._f(c.display_entity))}</b></span>`:"";
     this.shadowRoot.innerHTML=`<style>${TouchkioCard.css}</style><ha-card style="--s:${sc}">${c.show_image!==false?`<img class="bgimg" alt="" src="${this._e(c.image_url?.trim()||EMBEDDED_IMAGE_URL)}">`:""}<main>
       <header class="head"><div class="title"><span class="chip big"><ha-icon icon="mdi:tablet-dashboard"></ha-icon></span><div><h1>${this._e(c.title)}</h1><p>${this._e(c.subtitle)}</p></div></div>${pill}</header>
-      ${has(c.update_entity)?`<button class="panel row tone-${upT}" data-more="${this._e(c.update_entity)}"><span class="chip"><ha-icon icon="mdi:update"></ha-icon></span><span class="ut"><b>${this._e(c.update_title)}</b><small>${this._e(ver||this._f(c.update_entity))}</small></span><span class="pill static"><i class="dot"></i><b>${this._e(this._f(c.update_entity))}</b></span></button>`:""}
+      ${has(c.update_entity)?`<div class="panel row upd tone-${upT}"><button class="rm" data-more="${this._e(c.update_entity)}"><span class="chip"><ha-icon icon="mdi:update"></ha-icon></span><span class="ut"><b>${this._e(c.update_title)}</b><small>${this._e(ver||this._f(c.update_entity))}</small></span></button>${upAct}</div>`:""}
       ${acts.length?`<section class="foot n${acts.length}${acts.length%2?" odd":""}">${acts.join("")}</section>`:""}
       ${ctl.length?`<section class="ctl">${ctl.join("")}</section>`:""}
       ${has(c.url_entity)?this._pagePicker():""}
       ${tiles.length?`<section class="tiles">${tiles.join("")}</section>`:""}
+      ${this._pkgPanel()}
       ${info.length?`<section class="two">${info.join("")}</section>`:""}
       ${has(c.display_entity)?this._slider("mdi:brightness-6",c.display_entity,"Display","light"):""}
       ${has(c.zoom_entity)?this._slider("mdi:magnify-plus-outline",c.zoom_entity,"Seiten-Zoom","number"):""}
@@ -336,6 +360,15 @@ class TouchkioCard extends HTMLElement{
     .sl input[type=range]::-moz-range-thumb{width:1.1em;height:1.1em;border-radius:50%;background:var(--t);border:.2em solid color-mix(in srgb,var(--txt) 85%,transparent)}
     .slh .chip:is(button){cursor:pointer}
 
+    .tile{position:relative}.tile>.chev{position:absolute;top:.5em;right:.35em;margin:0}
+    .rm{flex:1;min-width:0;display:flex;align-items:center;gap:.8em;align-self:stretch}
+    .pill.inst{cursor:pointer}.pill.arm{background:color-mix(in srgb,var(--err) 18%,transparent);border-color:var(--err)}
+    .pkgs{padding:.6em .9em;display:grid;gap:.4em}
+    .pkgs header{display:flex;justify-content:space-between;align-items:center;font-size:.95em}.pkgs header span{color:var(--mut)}
+    .plist{max-height:13em;overflow:auto;font-size:.88em;-webkit-user-select:text;user-select:text}
+    .prow{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:.8em;padding:.25em 0;border-top:1px solid var(--line)}
+    .prow span{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.prow b{font-weight:400;color:var(--mut);font-variant-numeric:tabular-nums;white-space:nowrap}
+    .pkgs small{color:var(--mut);font-size:.78em;line-height:1.35}.pkgs code{font-family:ui-monospace,Menlo,monospace;color:var(--txt)}
     .row{width:100%;min-height:3.2em;padding:.45em .9em;display:flex;align-items:center;gap:.8em}
     .ut{flex:1;min-width:0;display:flex;flex-direction:column;gap:.15em}.ut b{font-size:1.05em}.ut small{color:var(--mut);font-size:.85em;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 

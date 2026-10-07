@@ -20,7 +20,8 @@
 - Seitenauswahl: Picker mit allen vorhandenen Home-Assistant-Dashboards und deren Ansichten; die Auswahl wird in die Seiten-URL-Entität geschrieben. Der Stift öffnet die Detailansicht zum manuellen Bearbeiten der URL
 - Prozessor-Temperatur, CPU, RAM und Paket-Updates; Warnfarben (CPU orange ab 75 %, RAM ab 80 %, Temperatur ab 70 °C, rot ab 90 % / 90 % / 80 °C)
 - Netzwerkadresse und Laufzeit
-- App-Update-Zeile mit installierter und ggf. neuer Version
+- App-Update-Zeile mit installierter und ggf. neuer Version; bei verfügbarem Update und unterstützter Installation erscheint der Button **Installieren** (mit zweitem Tippen zur Bestätigung), während der Installation der Fortschritt in Prozent
+- Tippen auf die Kachel **Pakete** klappt die Liste der verfügbaren System-Updates (Paketname und neue Version) auf und wieder zu
 - Aktualisieren, Neustart und Herunterfahren; Neustart und Herunterfahren verlangen ein zweites Tippen
 - Alle Entitäten über native Home-Assistant-Entity-Picker wählbar; nicht gesetzte Bereiche werden ausgeblendet
 - Breite im Sections-Dashboard frei von 4 bis 12 Spalten, Höhe automatisch
@@ -98,6 +99,12 @@ shutdown_entity: button.touchkio_touchkio_shutdown
 | `image_url` | URL | leer | Eigenes Gerätebild, z. B. `/local/images/touchkio.png`. Leer = eingebettetes Standardbild. |
 | `scale` | `0.8` – `1.8` | `1` | Skaliert die gesamte Card, z. B. für Kiosk-Displays. |
 | `confirm_actions` | `true` \| `false` | `true` | Neustart und Herunterfahren erst nach einem zweiten Tippen auslösen. |
+
+## Updates
+
+**App-Update (TouchKio selbst):** Die Update-Entität zeigt installierte und neue Version. Unterstützt TouchKio auf dem Gerät die Installation (Installation per `.deb` mit Dienst), erscheint in der Zeile der Button **Installieren**. Er ruft `update.install` auf; TouchKio führt dann sein Update-Skript aus und meldet den Fortschritt zurück. Unterstützt die Entität keine Installation, zeigt die Zeile nur den Status – das Update muss dann auf dem Gerät erfolgen.
+
+**System-Updates (apt):** TouchKio prüft stündlich per `apt list --upgradable` und meldet Anzahl und Liste (Attribut `packages` des Sensors „Package Upgrades"). Die Card zeigt die Liste an. Installieren lässt sich das aus Home Assistant nicht, weil TouchKio dafür keinen Dienst bereitstellt; auf dem Gerät: `sudo apt update && sudo apt upgrade`.
 
 ## Seitenauswahl
 
