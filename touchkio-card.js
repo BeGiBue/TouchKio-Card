@@ -232,14 +232,14 @@ class TouchkioCard extends HTMLElement{
       has(c.uptime_entity)&&this._tile("mdi:timer-outline",c.uptime_entity,"Laufzeit","primary",false,true)
     ].filter(Boolean);
     const ctl=[
-      has(c.keyboard_entity)&&this._toggle("mdi:keyboard-outline",c.keyboard_entity,"Bildschirmtastatur"),
-      has(c.kiosk_entity)&&this._select("mdi:kiosk",c.kiosk_entity,"Kiosk-Modus"),
+      has(c.keyboard_entity)&&this._toggle("mdi:keyboard-outline",c.keyboard_entity,"Tastatur"),
+      has(c.kiosk_entity)&&this._select("mdi:fullscreen",c.kiosk_entity,"Kiosk-Modus"),
       has(c.theme_entity)&&this._select("mdi:palette-outline",c.theme_entity,"Theme")
     ].filter(Boolean);
     const acts=[
       has(c.refresh_entity)&&this._act("mdi:refresh",c.refresh_entity,"Aktualisieren","Seite neu laden",false,false),
-      has(c.reboot_entity)&&this._act("mdi:restart",c.reboot_entity,"Neustart","TouchKio neu starten",false,true),
-      has(c.shutdown_entity)&&this._act("mdi:power",c.shutdown_entity,"Herunterfahren","TouchKio ausschalten",true,true)
+      has(c.reboot_entity)&&this._act("mdi:restart",c.reboot_entity,"Neustart","Neu starten",false,true),
+      has(c.shutdown_entity)&&this._act("mdi:power",c.shutdown_entity,"Ausschalten","Herunterfahren",true,true)
     ].filter(Boolean);
     const pill=has(c.display_entity)?`<span class="pill static tone-${this._tone(c.display_entity)}"><i class="dot"></i><b>${this._e(this._f(c.display_entity))}</b></span>`:"";
     this.shadowRoot.innerHTML=`<style>${TouchkioCard.css}</style><ha-card style="--s:${sc}">${c.show_image!==false?`<img class="bgimg" alt="" src="${this._e(c.image_url?.trim()||EMBEDDED_IMAGE_URL)}">`:""}<main>
@@ -283,7 +283,7 @@ class TouchkioCard extends HTMLElement{
     .pill b{font-weight:600;font-size:.9em;white-space:nowrap}
     .dot{width:.6em;height:.6em;border-radius:50%;background:var(--t);box-shadow:0 0 .55em .05em color-mix(in srgb,var(--t) 70%,transparent)}
 
-    .head{display:flex;align-items:center;justify-content:space-between;gap:.6em;margin-bottom:.2em}
+    .head{display:flex;align-items:flex-start;justify-content:space-between;gap:.6em;min-height:7.2em}
     .title{display:flex;align-items:center;gap:.7em;min-width:0}
     h1{margin:0;font-size:1.7em;font-weight:600;line-height:1.1;letter-spacing:-.01em}
     .title p{margin:.25em 0 0;color:var(--mut);font-size:.9em}
@@ -330,7 +330,7 @@ class TouchkioCard extends HTMLElement{
     .row{width:100%;min-height:3.8em;padding:.6em .9em;display:flex;align-items:center;gap:.8em}
     .ut{flex:1;min-width:0;display:flex;flex-direction:column;gap:.15em}.ut b{font-size:1.05em}.ut small{color:var(--mut);font-size:.85em;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 
-    .at{display:flex;flex-direction:column;gap:.15em;min-width:0}.at b{font-size:1em}.at small{color:var(--mut);font-size:.82em;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+    .at{display:flex;flex-direction:column;gap:.15em;min-width:0}.at b{font-size:1em;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.at small{color:var(--mut);font-size:.82em;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
     .foot{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:.6em}
     .foot.odd .act:first-child{grid-column:1/-1}
     .act{min-width:0;min-height:4em;display:flex;align-items:center;gap:.7em;padding:.7em .8em;background:var(--fill);border:1px solid var(--line);border-radius:1em}
@@ -346,10 +346,10 @@ class TouchkioCard extends HTMLElement{
     /* Gerätebild groß im Hintergrund – nur Maske + Deckkraft, kein Blur */
     ha-card{position:relative}
     main{position:relative;z-index:1}
-    .bgimg{position:absolute;z-index:0;top:.7em;right:.6em;height:19em;width:auto;max-width:62%;object-fit:contain;object-position:right top;opacity:.5;pointer-events:none;
-      -webkit-mask-image:radial-gradient(ellipse 62% 66% at 55% 40%,#000 30%,transparent 78%);mask-image:radial-gradient(ellipse 62% 66% at 55% 40%,#000 30%,transparent 78%)}
-    @container (max-width:399px){.bgimg{height:15em;opacity:.4}}
-    @container (min-width:700px){.bgimg{height:17em}}
+    .bgimg{position:absolute;z-index:0;top:.5em;right:.7em;height:15em;width:auto;max-width:62%;object-fit:contain;object-position:right top;opacity:.7;pointer-events:none;
+      -webkit-mask-image:radial-gradient(ellipse 70% 62% at 55% 34%,#000 38%,transparent 80%);mask-image:radial-gradient(ellipse 70% 62% at 55% 34%,#000 38%,transparent 80%)}
+    @container (max-width:399px){.bgimg{height:13em;opacity:.62}}
+    @container (min-width:700px){.bgimg{height:16em}}
     @media (prefers-reduced-motion:reduce){.bar u{transition:none}}
   `;}
 }
