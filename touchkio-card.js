@@ -222,10 +222,10 @@ class TouchkioCard extends HTMLElement{
     const ver=up?.attributes?.installed_version?(up.attributes.latest_version&&up.attributes.latest_version!==up.attributes.installed_version?`${up.attributes.installed_version} → ${up.attributes.latest_version}`:`Version ${up.attributes.installed_version}`):"";
     const pk=this._n(c.packages_entity);
     const tiles=[
-      has(c.temperature_entity)&&this._tile("mdi:thermometer",c.temperature_entity,"Temperatur",this._lvl(this._n(c.temperature_entity),70,80)),
+      has(c.temperature_entity)&&this._tile("mdi:thermometer",c.temperature_entity,"Temp.",this._lvl(this._n(c.temperature_entity),70,80)),
       has(c.cpu_entity)&&this._tile("mdi:cpu-64-bit",c.cpu_entity,"CPU",this._lvl(this._n(c.cpu_entity),75,90),true),
       has(c.memory_entity)&&this._tile("mdi:memory",c.memory_entity,"RAM",this._lvl(this._n(c.memory_entity),80,90),true),
-      has(c.packages_entity)&&this._tile("mdi:package-up",c.packages_entity,"Paket-Updates",isNaN(pk)?"neutral":pk>0?"warning":"success")
+      has(c.packages_entity)&&this._tile("mdi:package-up",c.packages_entity,"Pakete",isNaN(pk)?"neutral":pk>0?"warning":"success")
     ].filter(Boolean);
     const info=[
       has(c.network_entity)&&this._tile("mdi:ip-network-outline",c.network_entity,"Netzwerk","primary",false,true),
@@ -273,7 +273,7 @@ class TouchkioCard extends HTMLElement{
     @container (min-width:600px){ha-card{font-size:calc(17px*var(--s))}}
     @container (min-width:800px){ha-card{font-size:calc(19px*var(--s))}}
     @container (min-width:1000px){ha-card{font-size:calc(22px*var(--s))}}
-    main{padding:calc(16px*var(--s));display:grid;gap:.6em}
+    main{padding:calc(16px*var(--s));display:grid;grid-template-columns:minmax(0,1fr);gap:.6em}
     .tone-primary{--t:var(--pri)}.tone-success{--t:var(--ok)}.tone-warning{--t:var(--warn)}.tone-error{--t:var(--err)}.tone-neutral{--t:var(--mut)}
     .panel{background:var(--fill);border:1px solid var(--line);border-radius:1.1em}
     .chip{--t:var(--pri);flex:none;display:grid;place-items:center;width:2.1em;height:2.1em;border-radius:.65em;background:color-mix(in srgb,var(--t) 18%,transparent);color:var(--t)}
@@ -283,13 +283,21 @@ class TouchkioCard extends HTMLElement{
     .pill b{font-weight:600;font-size:.9em;white-space:nowrap}
     .dot{width:.6em;height:.6em;border-radius:50%;background:var(--t);box-shadow:0 0 .55em .05em color-mix(in srgb,var(--t) 70%,transparent)}
 
-    .head{display:flex;align-items:flex-start;justify-content:space-between;gap:.6em;min-height:7.2em}
+    .head{display:flex;align-items:flex-start;justify-content:space-between;gap:.6em;min-height:4.6em}
     .title{display:flex;align-items:center;gap:.7em;min-width:0}
     h1{margin:0;font-size:1.7em;font-weight:600;line-height:1.1;letter-spacing:-.01em}
     .title p{margin:.25em 0 0;color:var(--mut);font-size:.9em}
 
-    .tiles,.two,.ctl{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:.6em}
-    .ctl>:last-child:nth-child(odd){grid-column:1/-1}
+    .tiles,.two,.ctl{display:grid;gap:.6em}
+    .tiles{grid-template-columns:repeat(4,minmax(0,1fr))}.two{grid-template-columns:repeat(2,minmax(0,1fr))}.ctl{grid-template-columns:repeat(3,minmax(0,1fr))}
+    /* kompakte Kacheln: Symbol oben, darunter Bezeichnung und Wert – damit vier Messwerte in eine Zeile passen */
+    .tiles .tile,.ctl .tile{grid-template-columns:minmax(0,1fr);grid-template-rows:auto;min-height:0;padding:.55em .5em .55em .6em;row-gap:.2em;align-content:start;justify-items:start}
+    .tiles .chip,.ctl .chip{width:1.75em;height:1.75em;border-radius:.55em}.tiles .chip ha-icon,.ctl .chip ha-icon{--mdc-icon-size:1.1em}
+    .tiles .lbl,.ctl .lbl{-webkit-line-clamp:1;white-space:nowrap;max-width:100%;text-overflow:ellipsis}
+    .tiles .val,.ctl .val{margin-top:.1em;max-width:100%}
+    .tiles .val{flex-wrap:wrap;column-gap:.25em;row-gap:0}.tiles .val b{font-size:1.25em;overflow:visible;text-overflow:clip}.tiles .val em{font-size:.78em}.ctl .val b{font-size:1.05em}.tiles .val.txt b{font-size:1.05em}
+    .tiles .bar{margin-top:.35em;width:100%}
+    .two .tile{min-height:0;padding:.55em .7em;grid-template-rows:auto auto}.two .val{margin-top:.25em}.two .val b{font-size:1.15em}
     .tile{min-width:0;min-height:5.6em;display:grid;grid-template-columns:auto minmax(0,1fr);grid-template-rows:auto 1fr;column-gap:.55em;align-items:center;padding:.75em;
       background:var(--fill);border:1px solid var(--line);border-radius:1em}
     .tile:active,.act:active,.row:active{background:var(--fill-hi);transform:scale(.985)}
@@ -312,14 +320,15 @@ class TouchkioCard extends HTMLElement{
     .pick .edit ha-icon{--mdc-icon-size:1.2em}
     .pick:focus-within{outline:2px solid var(--pri);outline-offset:2px}
     .chev{--mdc-icon-size:1.2em;color:var(--mut);margin-left:auto;flex:none;align-self:center}
+    .sel .chev{position:absolute;top:.55em;right:.4em;margin:0}
 
-    .sl{padding:.8em .9em;display:grid;gap:.5em}
-    .slh{display:flex;align-items:center;gap:.7em}
-    .slh .at{flex:1}
-    .slv{display:flex;align-items:baseline;gap:.25em;white-space:nowrap}
-    .slv b{font-size:1.6em;font-weight:600;line-height:1;font-variant-numeric:tabular-nums}
+    .sl{padding:.5em .9em;display:flex;align-items:center;gap:.7em}
+    .slh{display:contents}
+    .slh .chip{order:0}.slh .at{order:1;flex:none;min-width:0}
+    .slv{order:3;min-width:3.3em;justify-content:flex-end;display:flex;align-items:baseline;gap:.2em;white-space:nowrap}
+    .slv b{font-size:1.3em;font-weight:600;line-height:1;font-variant-numeric:tabular-nums}
     .slv em{font-style:normal;font-size:.95em;color:var(--mut)}
-    .sl input[type=range]{-webkit-appearance:none;appearance:none;width:100%;height:1.8em;margin:0;background:transparent;touch-action:pan-y;cursor:pointer}
+    .sl input[type=range]{order:2;flex:1 1 0;width:0;min-width:3em;-webkit-appearance:none;appearance:none;height:1.8em;margin:0;background:transparent;touch-action:pan-y;cursor:pointer}
     .sl input[type=range]::-webkit-slider-runnable-track{height:.7em;border-radius:.4em;background:linear-gradient(to right,var(--t) var(--p),var(--line) var(--p))}
     .sl input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;appearance:none;width:1.5em;height:1.5em;margin-top:-.4em;border-radius:50%;background:var(--t);border:.2em solid color-mix(in srgb,var(--txt) 85%,transparent);box-shadow:0 .1em .4em rgba(0,0,0,.35)}
     .sl input[type=range]::-moz-range-track{height:.7em;border-radius:.4em;background:var(--line)}
@@ -327,29 +336,28 @@ class TouchkioCard extends HTMLElement{
     .sl input[type=range]::-moz-range-thumb{width:1.1em;height:1.1em;border-radius:50%;background:var(--t);border:.2em solid color-mix(in srgb,var(--txt) 85%,transparent)}
     .slh .chip:is(button){cursor:pointer}
 
-    .row{width:100%;min-height:3.8em;padding:.6em .9em;display:flex;align-items:center;gap:.8em}
+    .row{width:100%;min-height:3.2em;padding:.45em .9em;display:flex;align-items:center;gap:.8em}
     .ut{flex:1;min-width:0;display:flex;flex-direction:column;gap:.15em}.ut b{font-size:1.05em}.ut small{color:var(--mut);font-size:.85em;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 
     .at{display:flex;flex-direction:column;gap:.15em;min-width:0}.at b{font-size:1em;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.at small{color:var(--mut);font-size:.82em;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
     .foot{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:.6em}
     .foot.odd .act:first-child{grid-column:1/-1}
-    .act{min-width:0;min-height:4em;display:flex;align-items:center;gap:.7em;padding:.7em .8em;background:var(--fill);border:1px solid var(--line);border-radius:1em}
+    .act{min-width:0;min-height:3.4em;display:flex;align-items:center;gap:.7em;padding:.5em .8em;background:var(--fill);border:1px solid var(--line);border-radius:1em}
     .act.danger .chip{--t:var(--err)}
     .act.arm{background:color-mix(in srgb,var(--err) 18%,transparent);border-color:var(--err)}
     .act.arm .chip{--t:var(--err)}
     .act.sent{border-color:var(--ok)}.act.sent .chip{--t:var(--ok)}
 
     /* vier Messwerte nebeneinander und Aktionen in einer Reihe erst, wenn sie Platz haben */
-    @container (min-width:560px){.foot.n3{grid-template-columns:repeat(3,minmax(0,1fr))}.foot.n3.odd .act:first-child{grid-column:auto}.ctl{grid-template-columns:repeat(3,minmax(0,1fr))}.ctl>:last-child:nth-child(odd){grid-column:auto}}
-    @container (min-width:620px){.tiles{grid-template-columns:repeat(4,minmax(0,1fr))}}
-    @container (max-width:340px){.tiles,.two,.ctl,.foot{grid-template-columns:1fr}}
+    @container (min-width:560px){.foot.n3{grid-template-columns:repeat(3,minmax(0,1fr))}.foot.n3.odd .act:first-child{grid-column:auto}}
+        @container (max-width:340px){.tiles,.ctl{grid-template-columns:repeat(2,minmax(0,1fr))}.two,.foot{grid-template-columns:1fr}}
     /* Gerätebild groß im Hintergrund – nur Maske + Deckkraft, kein Blur */
     ha-card{position:relative}
     main{position:relative;z-index:1}
-    .bgimg{position:absolute;z-index:0;top:.5em;right:.7em;height:15em;width:auto;max-width:62%;object-fit:contain;object-position:right top;opacity:.7;pointer-events:none;
+    .bgimg{position:absolute;z-index:0;top:.5em;right:.7em;height:12em;width:auto;max-width:62%;object-fit:contain;object-position:right top;opacity:.7;pointer-events:none;
       -webkit-mask-image:radial-gradient(ellipse 70% 62% at 55% 34%,#000 38%,transparent 80%);mask-image:radial-gradient(ellipse 70% 62% at 55% 34%,#000 38%,transparent 80%)}
-    @container (max-width:399px){.bgimg{height:13em;opacity:.62}}
-    @container (min-width:700px){.bgimg{height:16em}}
+    @container (max-width:399px){.bgimg{height:11em;opacity:.62}}
+    @container (min-width:700px){.bgimg{height:14em}}
     @media (prefers-reduced-motion:reduce){.bar u{transition:none}}
   `;}
 }
