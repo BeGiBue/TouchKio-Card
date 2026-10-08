@@ -170,24 +170,12 @@ class TouchkioCard extends HTMLElement{
     const s=this._s(id),opts=s?.attributes?.options||[];
     return`<div class="tile sel tone-primary"><span class="chip"><ha-icon icon="${icon}"></ha-icon></span><span class="lbl">${label}</span><span class="val txt"><b>${this._e(this._f(id))}</b><ha-icon class="chev" icon="mdi:chevron-down"></ha-icon></span><select data-select="${this._e(id)}" aria-label="${this._e(label)}">${opts.map(o=>`<option value="${this._e(o)}"${o===s.state?" selected":""}>${this._e(this._f(id,o))}</option>`).join("")}</select></div>`;
   }
-  // Slider-Panel für Licht (Helligkeit in %) und Number-Entitäten
-  _slider(icon,id,label,kind){
-    const s=this._s(id),a=s?.attributes||{};
-    let min=0,max=100,step=1,val=0,live,sub="";
-    if(kind==="light"){
-      const on=s?.state==="on";
-      val=on?(a.brightness!=null?Math.round(Number(a.brightness)/255*100):100):0;
-      live=on?`<b>${val}</b><em>%</em>`:`<em>Aus</em>`;sub=this._f(id);
-    }else{
-      min=Number(a.min??0);max=Number(a.max??100);step=Number(a.step??1);val=this._n(id);
-      const v=this._val(id);live=`<b>${this._e(v.value)}</b>${v.unit?`<em>${this._e(v.unit)}</em>`:""}`;
-      if(isNaN(val))val=min;
-    }
-    const pct=max>min?Math.max(0,Math.min(100,(val-min)/(max-min)*100)):0;
-    const chip=kind==="light"
-      ?`<button class="chip" data-toggle="${this._e(id)}" aria-label="${this._e(label)} ein/aus"><ha-icon icon="${icon}"></ha-icon></button>`
-      :`<span class="chip"><ha-icon icon="${icon}"></ha-icon></span>`;
-    return`<section class="panel sl tone-${kind==="light"?this._tone(id):"primary"}"><div class="slh">${chip}<span class="at"><b>${label}</b>${sub?`<small>${this._e(sub)}</small>`:""}</span><span class="slv">${live}</span></div><input type="range" data-slider="${this._e(id)}" data-kind="${kind}" data-unit="${this._e(a.unit_of_measurement||"")}" min="${min}" max="${max}" step="${step}" value="${val}" style="--p:${pct}%" aria-label="${this._e(label)}"></section>`;
+  // Slider-Panel für die Display-Helligkeit (Licht, in %)
+  _slider(icon,id,label){
+    const s=this._s(id),a=s?.attributes||{},on=s?.state==="on";
+    const val=on?(a.brightness!=null?Math.round(Number(a.brightness)/255*100):100):0;
+    const live=on?`<b>${val}</b><em>%</em>`:`<em>Aus</em>`;
+    return`<section class="panel sl tone-${this._tone(id)}"><div class="slh"><button class="chip" data-toggle="${this._e(id)}" aria-label="${this._e(label)} ein/aus"><ha-icon icon="${icon}"></ha-icon></button><span class="at"><b>${label}</b><small>${this._e(this._f(id))}</small></span><span class="slv">${live}</span></div><input type="range" data-slider="${this._e(id)}" min="0" max="100" step="1" value="${val}" style="--p:${val}%" aria-label="${this._e(label)}"></section>`;
   }
   _act(icon,id,title,sub,danger,confirm){
     return`<button class="act${danger?" danger":""}" data-press="${this._e(id)}"${confirm?' data-confirm="1"':""} data-t="${this._e(title)}" data-s="${this._e(sub)}"><span class="chip"><ha-icon icon="${icon}"></ha-icon></span><span class="at"><b>${this._e(title)}</b><small>${this._e(sub)}</small></span></button>`;
@@ -231,21 +219,20 @@ class TouchkioCard extends HTMLElement{
     r.querySelectorAll("select[data-select]").forEach(x=>x.onchange=()=>this._call("select","select_option",{entity_id:x.dataset.select,option:x.value}));
     r.querySelectorAll("select[data-page]").forEach(x=>x.onchange=()=>{if(x.value!=="__cur")this._call("text","set_value",{entity_id:x.dataset.page,value:x.value});});
     r.querySelectorAll("input[data-slider]").forEach(sl=>{
-      const live=sl.closest(".sl")?.querySelector(".slv"),unit=sl.dataset.unit;
+      const live=sl.closest(".sl")?.querySelector(".slv");
       const start=()=>{this._drag=true;clearTimeout(this._dt);};
       const end=()=>{clearTimeout(this._dt);this._dt=setTimeout(()=>{this._drag=false;this._update();},600);};
       ["pointerdown","touchstart","mousedown"].forEach(ev=>sl.addEventListener(ev,start,{passive:true}));
       ["pointerup","pointercancel","touchend","mouseup","blur"].forEach(ev=>sl.addEventListener(ev,end,{passive:true}));
       sl.oninput=()=>{
         this._drag=true;
-        const v=Number(sl.value),min=Number(sl.min),max=Number(sl.max);
-        sl.style.setProperty("--p",`${max>min?(v-min)/(max-min)*100:0}%`);
-        if(live)live.innerHTML=sl.dataset.kind==="light"?(v===0?"<em>Aus</em>":`<b>${v}</b><em>%</em>`):`<b>${this._e(v)}</b>${unit?`<em>${this._e(unit)}</em>`:""}`;
+        const v=Number(sl.value);
+        sl.style.setProperty("--p",`${v}%`);
+        if(live)live.innerHTML=v===0?"<em>Aus</em>":`<b>${v}</b><em>%</em>`;
       };
       sl.onchange=async()=>{
         const id=sl.dataset.slider,v=Number(sl.value);
-        if(sl.dataset.kind==="light")await this._call("light",v===0?"turn_off":"turn_on",v===0?{entity_id:id}:{entity_id:id,brightness_pct:v});
-        else await this._call("number","set_value",{entity_id:id,value:v});
+        await this._call("light",v===0?"turn_off":"turn_on",v===0?{entity_id:id}:{entity_id:id,brightness_pct:v});
         end();
       };
     });
@@ -290,7 +277,7 @@ class TouchkioCard extends HTMLElement{
       ${tiles.length?`<section class="tiles">${tiles.join("")}</section>`:""}
       ${this._pkgPanel()}
       ${info.length?`<section class="two">${info.join("")}</section>`:""}
-      ${has(c.display_entity)?this._slider("mdi:brightness-6",c.display_entity,"Display","light"):""}
+      ${has(c.display_entity)?this._slider("mdi:brightness-6",c.display_entity,"Display"):""}
     </main></ha-card>`;
     const im=this.shadowRoot.querySelector(".bgimg");
     if(im)im.onerror=()=>{if(im.src!==EMBEDDED_IMAGE_URL)im.src=EMBEDDED_IMAGE_URL;else im.style.display="none";};
@@ -410,8 +397,6 @@ class TouchkioCard extends HTMLElement{
     @media (prefers-reduced-motion:reduce){.bar u{transition:none}}
   `;}
 }
-// Ein evtl. noch geladener älterer Loader soll Methoden der Klasse nicht überschreiben können
-Object.freeze(TouchkioCard.prototype);
 if(!customElements.get("touchkio-card"))customElements.define("touchkio-card",TouchkioCard);
 window.customCards=window.customCards||[];
 if(!window.customCards.some(c=>c.type==="touchkio-card"))window.customCards.push({type:"touchkio-card",name:"TouchKio Card",description:"Steuerung und Status für TouchKio im Glas-Look, optimiert für iPhone, iPad und Hochformat-Kiosk.",preview:true,documentationURL:"https://github.com/BeGiBue/TouchKio-Card"});
