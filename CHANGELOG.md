@@ -1,5 +1,11 @@
 # Changelog
 
+## 1.0.3 - 2026-10-08
+
+### Geändert
+
+- Aufräumen im Code: nicht mehr benötigter Programmcode für Number-Slider (Überbleibsel des entfernten Seiten-Zooms) entfernt. Keine funktionalen Änderungen.
+
 ## 1.0.2 - 2026-10-08
 
 ### Geändert

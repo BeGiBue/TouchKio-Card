@@ -15,7 +15,7 @@
 </p>
 
 <p align="center">
-  <strong>Version 1.0.2</strong><br>
+  <strong>Version 1.0.3</strong><br>
   <a href="https://github.com/BeGiBue/TouchKio-Card/actions/workflows/validate.yml"><img src="https://github.com/BeGiBue/TouchKio-Card/actions/workflows/validate.yml/badge.svg" alt="HACS validation"></a>
 </p>
 
