@@ -15,7 +15,7 @@
 </p>
 
 <p align="center">
-  <strong>Version 1.0.1</strong><br>
+  <strong>Version 1.0.2</strong><br>
   <a href="https://github.com/BeGiBue/TouchKio-Card/actions/workflows/validate.yml"><img src="https://github.com/BeGiBue/TouchKio-Card/actions/workflows/validate.yml/badge.svg" alt="HACS validation"></a>
 </p>
 
@@ -118,6 +118,10 @@ shutdown_entity: button.touchkio_touchkio_shutdown
 **App-Update (TouchKio selbst):** Die Update-Entität zeigt installierte und neue Version. Unterstützt TouchKio auf dem Gerät die Installation (Installation per `.deb` mit Dienst), erscheint in der Zeile der Button **Installieren**. Er ruft `update.install` auf; TouchKio führt dann sein Update-Skript aus und meldet den Fortschritt zurück. Unterstützt die Entität keine Installation, zeigt die Zeile nur den Status – das Update muss dann auf dem Gerät erfolgen.
 
 **System-Updates (apt):** TouchKio prüft stündlich per `apt list --upgradable` und meldet Anzahl und Liste (Attribut `packages` des Sensors „Package Upgrades"). Die Card zeigt die Liste an. Installieren lässt sich das aus Home Assistant nicht, weil TouchKio dafür keinen Dienst bereitstellt; auf dem Gerät: `sudo apt update && sudo apt upgrade`.
+
+## Layout / Größe
+
+Im Home-Assistant-Sections-Dashboard ist die Breite frei einstellbar (4 bis 12 Spalten). Die Höhe ist fest: Die Card meldet genau die Zeilenzahl, die ihr Inhalt bei der aktuellen Breite braucht, und im Layout-Editor lässt sie sich nicht verändern. Die aufgeklappte Paketliste ändert die Höhe nicht, sondern scrollt innerhalb der Card.
 
 ## Seitenauswahl
 

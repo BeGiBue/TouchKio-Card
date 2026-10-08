@@ -1,5 +1,12 @@
 # Changelog
 
+## 1.0.2 - 2026-10-08
+
+### Geändert
+
+- Die Höhe der Card ist fest: Im Layout-Editor lässt sie sich nicht mehr verändern (`rows`, `min_rows` und `max_rows` sind gleich), die Breite bleibt frei einstellbar.
+- Die aufgeklappte Paketliste ändert die Höhe nicht mehr, sondern scrollt innerhalb der Card.
+
 ## 1.0.1 - 2026-10-07
 
 ### Geändert
