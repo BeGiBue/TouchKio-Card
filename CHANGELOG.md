@@ -1,5 +1,17 @@
 # Changelog
 
+## 1.0.4 - 2026-10-15
+
+### Behoben
+
+- **Scrollen im TouchKio-Kiosk:** Die Card war selbst ein Scroll-Container mit `overscroll-behavior: contain`. Schon wenige Pixel Überstand (z. B. nach Zeilenumbruch oder nachgeladener Schrift) reichten, damit jede Wischgeste auf der Card von ihr „geschluckt“ wurde und das Dashboard nicht mehr scrollte – auf dem schmalen Kiosk-Display liegt die Card auf der ganzen Breite. Die Card scrollt jetzt nicht mehr selbst; nur die aufgeklappte Paketliste scrollt und gibt am Ende die Geste an die Seite weiter.
+- Die Card wächst bei Überstand mit dem Inhalt, statt ihn abzuschneiden. Die gemeldete Zeilenzahl wird auch bei Änderungen der Inhaltshöhe und nach dem Laden der Schrift neu gemessen.
+- Display-Slider: Bricht der Browser die Geste ab (`touchcancel`), bleibt die Card nicht mehr im Ziehen-Zustand hängen.
+
+### Neu
+
+- **Kompakte Darstellung** für kleine Hochformat-Displays (z. B. Raspberry Pi 7" hochkant, 480 × 800 Pixel, TouchKio-Web-Zoom 1,25 → 384 × 640 CSS-Pixel). Die Card braucht dort etwa 500 statt 700 Pixel Höhe, sodass alles ohne Scrollen sichtbar ist. Neue Option `compact`: `auto` (Standard: im TouchKio/Electron bei schmalem Hochformat), `on` oder `off`.
+
 ## 1.0.3 - 2026-10-08
 
 ### Geändert

@@ -15,7 +15,7 @@
 </p>
 
 <p align="center">
-  <strong>Version 1.0.3</strong><br>
+  <strong>Version 1.0.4</strong><br>
   <a href="https://github.com/BeGiBue/TouchKio-Card/actions/workflows/validate.yml"><img src="https://github.com/BeGiBue/TouchKio-Card/actions/workflows/validate.yml/badge.svg" alt="HACS validation"></a>
 </p>
 
@@ -35,6 +35,7 @@
 - Alle Entitäten über native Home-Assistant-Entity-Picker wählbar; nicht gesetzte Bereiche werden ausgeblendet
 - Breite im Sections-Dashboard frei von 4 bis 12 Spalten, Höhe automatisch
 - Optimiert für Hochformat und Touch – iPhone, iPad und Raspberry-Pi-Kiosk: Schrift wächst mit der Kartenbreite
+- Kompakte Darstellung für kleine Hochformat-Displays (Raspberry Pi 7" hochkant): alles auf einer Bildschirmhöhe, ohne Scrollen
 
 ## Standard-Entitäten
 
@@ -111,6 +112,7 @@ shutdown_entity: button.touchkio_touchkio_shutdown
 | `show_image` | `true` \| `false` | `true` | Gerätebild im Hintergrund anzeigen. |
 | `image_url` | URL | leer | Eigenes Gerätebild, z. B. `/local/images/touchkio.png`. Leer = eingebettetes Standardbild. |
 | `scale` | `0.8` – `1.8` | `1` | Skaliert die gesamte Card, z. B. für Kiosk-Displays. |
+| `compact`         | `auto` \| `on` \| `off` | `auto` | Kompakte Darstellung für kleine Hochformat-Displays. `auto`: im TouchKio-Kiosk (Electron) bei schmalem Hochformat (Breite ≤ 520, Höhe ≤ 760 CSS-Pixel). |
 | `confirm_actions` | `true` \| `false` | `true` | Neustart und Herunterfahren erst nach einem zweiten Tippen auslösen. |
 
 ## Updates
@@ -121,7 +123,11 @@ shutdown_entity: button.touchkio_touchkio_shutdown
 
 ## Layout / Größe
 
-Im Home-Assistant-Sections-Dashboard ist die Breite frei einstellbar (4 bis 12 Spalten). Die Höhe ist fest: Die Card meldet genau die Zeilenzahl, die ihr Inhalt bei der aktuellen Breite braucht, und im Layout-Editor lässt sie sich nicht verändern. Die aufgeklappte Paketliste ändert die Höhe nicht, sondern scrollt innerhalb der Card.
+Im Home-Assistant-Sections-Dashboard ist die Breite frei einstellbar (4 bis 12 Spalten). Die Höhe ist fest: Die Card meldet genau die Zeilenzahl, die ihr Inhalt bei der aktuellen Breite braucht, und im Layout-Editor lässt sie sich nicht verändern. Die aufgeklappte Paketliste ändert die Höhe nicht, sondern scrollt innerhalb der Card; am Listenende wird die Wischgeste an die Seite weitergereicht. Ansonsten scrollt die Card nie selbst, damit das Dashboard auf Touch-Displays immer scrollbar bleibt.
+
+### Raspberry Pi 7" hochkant
+
+Das alte Raspberry-Pi-Display hat 800 × 480 Pixel; hochkant sind das 480 × 800. TouchKio rendert standardmäßig mit Web-Zoom 1,25, die Seite sieht dann nur 384 × 640 CSS-Pixel. Dafür schaltet `compact: auto` im Kiosk die kompakte Darstellung ein (ca. 500 Pixel Höhe statt 700, passt mit Kopfzeile ohne Scrollen). Bei Web-Zoom 1,0 (480 × 800) reicht die normale Darstellung. Mit `compact: on` oder `off` lässt sich das erzwingen.
 
 ## Seitenauswahl
 
