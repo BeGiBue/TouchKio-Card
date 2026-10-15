@@ -8,15 +8,15 @@
   Custom-Card für <a href="https://github.com/leukipp/touchkio">TouchKio</a> – Steuerung und Status eines Raspberry-Pi-Kiosks im Stil der NAS Card.
 </p>
 
-## Screenshot
+## Vorschau
 
-<p align="center">
-  <img src="https://raw.githubusercontent.com/BeGiBue/home-assistant-touchkio-card/main/images/Screenshot.png" alt="TouchKio Card Screenshot" width="400">
-</p>
+**Normalbetrieb – schmal (350 px)**
 
-<p align="center">
-  <sub>Darstellung mit Beispieldaten und Beispiel-Theme; Farben und Hintergrund kommen von deinem Home-Assistant-Theme.</sub>
-</p>
+<img src="screenshots/touchkio-normal-350-light.png" width="350" alt="TouchKio Card im Normalbetrieb, 350 px Kartenbreite, helles Theme">
+
+**Normalbetrieb – breit (800 px)**
+
+<img src="screenshots/touchkio-normal-800-light.png" width="800" alt="TouchKio Card im Normalbetrieb, 800 px Kartenbreite, helles Theme">
 
 <p align="center">
   <strong>Version 1.0.4</strong><br>
