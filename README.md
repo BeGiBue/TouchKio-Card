@@ -1,3 +1,7 @@
+<p align="center">
+  <img src="https://raw.githubusercontent.com/BeGiBue/home-assistant-touchkio-card/main/images/touchkio-card-logo-160.png" alt="TouchKio Card" width="160">
+</p>
+
 <h1 align="center">TouchKio Card</h1>
 
 <p align="center">
