@@ -12,14 +12,14 @@
 
 **Normalbetrieb – schmal (350 px)**
 
-<img src="screenshots/touchkio-normal-350-light.png" width="350" alt="TouchKio Card im Normalbetrieb, 350 px Kartenbreite, helles Theme">
+<img src="https://raw.githubusercontent.com/BeGiBue/home-assistant-touchkio-card/main/screenshots/touchkio-normal-350-light.png" width="350" alt="TouchKio Card im Normalbetrieb, 350 px Kartenbreite, helles Theme">
 
 **Normalbetrieb – breit (800 px)**
 
-<img src="screenshots/touchkio-normal-800-light.png" width="800" alt="TouchKio Card im Normalbetrieb, 800 px Kartenbreite, helles Theme">
+<img src="https://raw.githubusercontent.com/BeGiBue/home-assistant-touchkio-card/main/screenshots/touchkio-normal-800-light.png" width="800" alt="TouchKio Card im Normalbetrieb, 800 px Kartenbreite, helles Theme">
 
 <p align="center">
-  <strong>Version 1.0.4</strong><br>
+  <strong>Version 1.0.5</strong><br>
   <a href="https://github.com/BeGiBue/home-assistant-touchkio-card/actions/workflows/validate.yml"><img src="https://github.com/BeGiBue/home-assistant-touchkio-card/actions/workflows/validate.yml/badge.svg" alt="HACS validation"></a>
 </p>
 
